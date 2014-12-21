@@ -10,23 +10,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import lab.kultida.utility.TCP_Unicast_Send;
 
 public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFragment_Prototype {
     protected TextView section_Label;
+    protected VictimListView adapter;
+    protected TextView textView_Summary;
     protected Button button_CheckHotspotInformation;
     protected TextView textView_Output;
+    protected ListView listView_Victim;
     protected int serverPort_CheckHotspotInformation = 9998;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_check_hotspot_information, container, false);
+
         defaultOperation();
         getComponent();
+        createChat();
+
         return rootView;
     }
 
@@ -35,6 +45,17 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
         button_CheckHotspotInformation = (Button)rootView.findViewById(R.id.button_CheckHotspotInformation);
         button_CheckHotspotInformation.setOnClickListener(this);
         textView_Output = (TextView)rootView.findViewById(R.id.textView_Output);
+        listView_Victim = (ListView)rootView.findViewById(R.id.listView_Victim);
+        textView_Summary = (TextView)rootView.findViewById(R.id.textView_Summary);
+    }
+
+    public void createChat(){
+        ArrayList<String> macAddress = new ArrayList<>();
+        ArrayList<String> time = new ArrayList<>();
+        ArrayList<String> signal = new ArrayList<>();
+        ArrayList<String> annotation = new ArrayList<>();
+        adapter = new VictimListView(activity,macAddress,time,signal,annotation);
+        listView_Victim.setAdapter(adapter);
     }
 
     @Override
@@ -74,6 +95,29 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
         protected void onPostExecute(String result) {
             textView_Output.append(result + "\n");
             textView_Output.append(data_receive + "\n");
+            try {
+                JSONObject data_frame = new JSONObject(result);
+                int numVictim = data_frame.getInt("numVictim");
+                int numRedSignal = data_frame.getInt("numRedSignal");
+                int numYellowSignal = data_frame.getInt("numYellowSignal");
+                int numGreenSignal = data_frame.getInt("numGreenSignal");
+                textView_Summary.append(
+                                "Total Victim : " + numVictim + "\n" +
+                                "Red Victim : " + numRedSignal + "\n" +
+                                "Yellow Victim : " + numYellowSignal + "\n" +
+                                "Green Victim : " + numGreenSignal  + "\n"
+                );
+                JSONArray clientList = data_frame.getJSONArray("victim");
+                for(int i = 0; i < numVictim;i++){
+                    JSONObject client = clientList.getJSONObject(i);
+                    adapter.addVictim(client);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            adapter.notifyDataSetChanged();
+            listView_Victim.setSelection(adapter.getCount() - 1);
+            textView_Output.append("Check Hotspot Information from server Complete\n");
         }
     }
 }

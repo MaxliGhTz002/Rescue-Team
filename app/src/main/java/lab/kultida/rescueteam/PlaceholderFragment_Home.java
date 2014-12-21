@@ -18,8 +18,10 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_home, container, false);
+
         defaultOperation();
         getComponent();
+
         return rootView;
     }
 

@@ -29,8 +29,10 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_send_alarm_signal, container, false);
+        
         defaultOperation();
         getComponent();
+
         return rootView;
     }
 
