@@ -42,11 +42,11 @@
             android:layout_height="wrap_content"
             android:text="Summary"
             android:id="@+id/textView_Summary"
-            android:layout_above="@+id/listView_Victim"
+            android:layout_above="@+id/listView_WifiResult"
             android:layout_alignParentEnd="true" />
 
         <ListView
-            android:id="@+id/listView_Victim"
+            android:id="@+id/listView_WifiResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -82,7 +82,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:scrollbars="horizontal|vertical"
-            android:layout_below="@+id/listView_Victim"/>
+            android:layout_below="@+id/listView_WifiResult"/>
     </LinearLayout>
 
 </RelativeLayout>

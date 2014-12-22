@@ -5,6 +5,7 @@ package lab.kultida.rescueteam;
  */
 
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,8 +36,7 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
 
         defaultOperation();
         getComponent();
-        createChat();
-
+        createVictimList();
         return rootView;
     }
 
@@ -45,11 +45,12 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
         button_CheckHotspotInformation = (Button)rootView.findViewById(R.id.button_CheckHotspotInformation);
         button_CheckHotspotInformation.setOnClickListener(this);
         textView_Output = (TextView)rootView.findViewById(R.id.textView_Output);
-        listView_Victim = (ListView)rootView.findViewById(R.id.listView_Victim);
+        textView_Output.setMovementMethod(new ScrollingMovementMethod());
+        listView_Victim = (ListView)rootView.findViewById(R.id.listView_WifiResult);
         textView_Summary = (TextView)rootView.findViewById(R.id.textView_Summary);
     }
 
-    public void createChat(){
+    public void createVictimList(){
         ArrayList<String> macAddress = new ArrayList<>();
         ArrayList<String> time = new ArrayList<>();
         ArrayList<String> signal = new ArrayList<>();
@@ -93,10 +94,10 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
 
         @Override
         protected void onPostExecute(String result) {
-            textView_Output.append(result + "\n");
-            textView_Output.append(data_receive + "\n");
+            textView_Output.append("Data Send  " + result + "\n");
+            textView_Output.append("Data Receive " + data_receive + "\n");
             try {
-                JSONObject data_frame = new JSONObject(result);
+                JSONObject data_frame = new JSONObject(data_receive);
                 int numVictim = data_frame.getInt("numVictim");
                 int numRedSignal = data_frame.getInt("numRedSignal");
                 int numYellowSignal = data_frame.getInt("numYellowSignal");

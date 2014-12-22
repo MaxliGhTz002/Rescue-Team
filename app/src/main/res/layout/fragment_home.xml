@@ -10,18 +10,79 @@
     android:id="@+id/fragment_home"
     tools:context="lab.kultida.rescueteam.PlaceholderFragment_Home">
 
-    <TextView
-        android:id="@+id/section_Label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Home"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
-        android:layout_below="@+id/section_Label"
-        android:layout_alignParentStart="true" />
+        <TextView
+            android:id="@+id/section_Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scan Wifi Result"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:id="@+id/textView_Status"
+            android:layout_below="@+id/button_CheckHotspotInformation"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Summary"
+            android:id="@+id/textView_Summary"
+            android:layout_above="@+id/listView_WifiResult"
+            android:layout_alignParentEnd="true" />
+
+        <ListView
+            android:id="@+id/listView_WifiResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:overScrollFooter="@android:color/holo_blue_bright"
+            android:overScrollHeader="@android:color/holo_blue_bright"
+            android:layout_gravity="bottom"
+            android:scrollingCache="true"
+            android:stackFromBottom="true"
+            android:smoothScrollbar="true"
+            android:nestedScrollingEnabled="true"
+            android:fastScrollAlwaysVisible="false"
+            android:fastScrollEnabled="false"
+            android:headerDividersEnabled="false"
+            android:footerDividersEnabled="false">
+        </ListView>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SCAN WIFI"
+            android:id="@+id/button_ScanWifi"
+            android:layout_below="@+id/section_Label"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_Output"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:scrollbars="horizontal|vertical"
+            android:layout_below="@+id/listView_WifiResult"/>
+    </LinearLayout>
 
 </RelativeLayout>
