@@ -61,7 +61,6 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
                 textView_Output.append("position : " + position + ", " + adapter.wifi.get(position));
-                WifiManager wifiManager = (WifiManager)activity.getSystemService(Context.WIFI_SERVICE);
                 activity.connectToWifi(adapter.wifi.get(position));
 //                if(wifiManager.isWifiEnabled()) {
 //                    WifiInfo info = wifiManager.getConnectionInfo ();
