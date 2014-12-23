@@ -4,6 +4,8 @@ package lab.kultida.rescueteam;
  * Created by ekapop on 14/12/2557.
  */
 
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -79,7 +81,13 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
 
                 Log.d("Placeholder_CheckHotspotInformation - Click()", "TCP_Unicast_Send_CheckHotspotInformation()execute(data_frame.toString()");
                 textView_Output.append("Checking Hotspot Information from server\n");
-                new  TCP_Unicast_Send_CheckHotspotInformation().execute(data_frame.toString());
+
+	            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		            new TCP_Unicast_Send_CheckHotspotInformation().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
+	            } else {
+		            new TCP_Unicast_Send_CheckHotspotInformation().execute(data_frame.toString());
+	            }
+                //new  TCP_Unicast_Send_CheckHotspotInformation().execute(data_frame.toString());
                 break;
         }
     }
@@ -97,22 +105,26 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
             textView_Output.append("Data Send  " + result + "\n");
             textView_Output.append("Data Receive " + data_receive + "\n");
             try {
-                JSONObject data_frame = new JSONObject(data_receive);
-                int numVictim = data_frame.getInt("numVictim");
-                int numRedSignal = data_frame.getInt("numRedSignal");
-                int numYellowSignal = data_frame.getInt("numYellowSignal");
-                int numGreenSignal = data_frame.getInt("numGreenSignal");
-                textView_Summary.append(
-                                "Total Victim : " + numVictim + "\n" +
-                                "Red Victim : " + numRedSignal + "\n" +
-                                "Yellow Victim : " + numYellowSignal + "\n" +
-                                "Green Victim : " + numGreenSignal  + "\n"
-                );
-                JSONArray clientList = data_frame.getJSONArray("victim");
-                for(int i = 0; i < numVictim;i++){
-                    JSONObject client = clientList.getJSONObject(i);
-                    adapter.addVictim(client);
-                }
+	            if(data_receive != null) {
+		            JSONObject data_frame = new JSONObject(data_receive);
+		            int numVictim = data_frame.getInt("numVictim");
+		            int numRedSignal = data_frame.getInt("numRedSignal");
+		            int numYellowSignal = data_frame.getInt("numYellowSignal");
+		            int numGreenSignal = data_frame.getInt("numGreenSignal");
+		            textView_Summary.append(
+				            "Total Victim : " + numVictim + "\n" +
+						            "Red Victim : " + numRedSignal + "\n" +
+						            "Yellow Victim : " + numYellowSignal + "\n" +
+						            "Green Victim : " + numGreenSignal + "\n"
+		            );
+		            JSONArray clientList = data_frame.getJSONArray("victim");
+		            for (int i = 0; i < numVictim; i++) {
+			            JSONObject client = clientList.getJSONObject(i);
+			            adapter.addVictim(client);
+		            }
+	            } else {
+		            textView_Summary.append("No result");
+	            }
             } catch (Exception e) {
                 e.printStackTrace();
             }

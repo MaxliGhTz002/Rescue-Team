@@ -5,9 +5,10 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -26,8 +27,10 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... arg0) {
+
         Socket socket = null;
         DataOutputStream output = null;
+
         try{
             // Initial condition
             JSONObject data_frame = new JSONObject(arg0[0]);
@@ -43,17 +46,22 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             Log.d(log_Head + " - doInBackground","open socket");
             socket = new Socket(serverIP,serverPort);
             output = new DataOutputStream(socket.getOutputStream());
-            output.writeUTF(data);
-            output.flush();
 
-            Log.d(log_Head + " - doInBackground", "receiveData : " + receiveData);
-            if(receiveData){
-                DataInputStream input = new DataInputStream(socket.getInputStream());
-                while(input.available() > 0){
-                    data_receive = data_receive + input.readUTF();
+            output.writeUTF(data);
+            //output.flush();
+
+
+	        BufferedReader input = new BufferedReader(
+			        new InputStreamReader(socket.getInputStream()));
+
+			String temp = null;
+                if((temp = input.readLine()) != null) {
+	                Log.d(log_Head + "- doInBackground", "has input");
+	                data_receive = new String(temp);
                 }
                 Log.d(log_Head + " - doInBackground", "data_receive : " + data_receive);
-            }
+	            input.close();
+
 
             output.close();
             socket.close();
