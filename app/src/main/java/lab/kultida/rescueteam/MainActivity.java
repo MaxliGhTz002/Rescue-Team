@@ -29,7 +29,9 @@ import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +50,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected String serverPort_UpdateLocate = "9998";
     protected String PIIP = "192.168.42.1";
     protected String PIPort_JSON = "9090";
+    protected Calendar calendar;
+    protected SimpleDateFormat time;
+    protected SimpleDateFormat date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_main);
 
+        createTime();
         defaultOperation();
     }
 
@@ -104,6 +110,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         Log.d("MainActivity - checkIPAndServerConnection()","TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
         new TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString());
 
+    }
+
+    public void createTime(){
+        calendar = Calendar.getInstance();
+        time = new SimpleDateFormat("HH:mm");
+        date = new SimpleDateFormat("dd-MM-yyyy");
     }
 
     public String getIPAddress(boolean useIPv4) {
@@ -170,11 +182,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         return info.getMacAddress();
     }
 
-    /*Connect To WIFI*/
-    //TODO What r u doing
-    protected void connectToWifi(){
+    protected void connectToWifi(final String networkSSID){
         setSupportProgressBarIndeterminateVisibility(true);
-        String networkSSID = "My_AP";
 //        String networkPass = "";
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + networkSSID + "\"";
@@ -205,12 +214,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 return;
             }
         }
-
-//	    List<ScanResult> temp = wifiManager.getScanResults();
-//		for(int z = 0; z < temp.size(); z++){
-//			Log.d("Wifi List" + z, temp.get(z).SSID.toString() + ", " + temp.get(z).level);
-//		}
-
         //Add config to Wifi Manager
         wifiManager.addNetwork(conf);
 
@@ -221,6 +224,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for( WifiConfiguration i : list ) {
+
             if(i.SSID != null && i.SSID.contains("" + networkSSID + "")) {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
@@ -235,7 +239,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 adb_ConnectWIFI.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        connectToWifi();
+                        connectToWifi(networkSSID);
                     }
                 });
                 adb_ConnectWIFI.show();
@@ -342,7 +346,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 checkServerConnection();
                 break;
             case R.id.connectWifi :
-                connectToWifi();
+                connectToWifi("My_AP_Pi");
                 break;
             case R.id.action_getJSONData:
                 getJSONData();

@@ -45,11 +45,26 @@ public class VictimListView extends ArrayAdapter<String>{
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView= inflater.inflate(R.layout.victim_list, null, true);
-        TextView textView_Head = (TextView) rowView.findViewById(R.id.textView_Head);
+        TextView textView_Signal = (TextView) rowView.findViewById(R.id.textView_Signal);
+        TextView textView_MacAddress = (TextView) rowView.findViewById(R.id.textView_MacAddress);
+        TextView textView_Time = (TextView) rowView.findViewById(R.id.textView_Time);
         TextView textView_Annotation = (TextView) rowView.findViewById(R.id.textView_Annotation);
 
-        textView_Head.setText(macAddress.get(position) + " : " + time.get(position) + "   < " + signal.get(position) + " >");
+        switch (signal.get(position).toUpperCase()){
+            case "RED" :
+                textView_Signal.setBackgroundResource(R.color.RED);
+                break;
+            case "YELLOW":
+                textView_Signal.setBackgroundResource(R.color.YELLOW);
+                break;
+            case "GREEN":
+                textView_Signal.setBackgroundResource(R.color.GREEN);
+                break;
+        }
+        textView_MacAddress.setText(macAddress.get(position));
+        textView_Time.setText(time.get(position));
         textView_Annotation.setText(annotation.get(position));
+
         return rowView;
     }
 }

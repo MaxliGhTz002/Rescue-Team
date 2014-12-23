@@ -36,7 +36,7 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             JSONObject data_frame = new JSONObject(arg0[0]);
             Log.d(log_Head + " - doInBackground","data_frame : " + data_frame);
             InetAddress serverIP = InetAddress.getByName(data_frame.getString("serverIP"));
-            int serverPort = Integer.parseInt(data_frame.getString("serverPort_CheckHotspotInformation"));
+            int serverPort = Integer.parseInt(data_frame.getString("serverPort"));
             String data = data_frame.getJSONObject("data").toString();
             Log.d(log_Head + " - doInBackground","serverIP : " + data_frame.getString("serverIP"));
             Log.d(log_Head + " - doInBackground","serverPort : " + serverPort);

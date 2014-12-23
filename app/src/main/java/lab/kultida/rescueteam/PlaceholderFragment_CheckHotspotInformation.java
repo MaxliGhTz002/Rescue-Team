@@ -31,6 +31,7 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
     protected TextView textView_Output;
     protected ListView listView_Victim;
     protected int serverPort_CheckHotspotInformation = 9998;
+    String wifiName = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -70,10 +71,10 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
                 try {
                     data.put("signal","getHotspotInformation");
                     data.put("macaddress", activity.getMacAddress());
-                    data.put("fromPi", activity.getNetworkName());
+                    data.put("fromPi", wifiName = activity.getNetworkName());
 
                     data_frame.put("serverIP", serverIP);
-                    data_frame.put("serverPort_CheckHotspotInformation", serverPort_CheckHotspotInformation);
+                    data_frame.put("serverPort", serverPort_CheckHotspotInformation);
                     data_frame.put("data", data);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -106,19 +107,21 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
             textView_Output.append("Data Receive " + data_receive + "\n");
             try {
 	            if(data_receive != null) {
+                    adapter.clear();
 		            JSONObject data_frame = new JSONObject(data_receive);
 		            int numVictim = data_frame.getInt("numVictim");
 		            int numRedSignal = data_frame.getInt("numRedSignal");
 		            int numYellowSignal = data_frame.getInt("numYellowSignal");
 		            int numGreenSignal = data_frame.getInt("numGreenSignal");
-		            textView_Summary.append(
-				            "Total Victim : " + numVictim + "\n" +
+		            textView_Summary.setText(
+                                    "WIFI : " + wifiName +  "\n" +
+				                    "Total Victim : " + numVictim + "\n" +
 						            "Red Victim : " + numRedSignal + "\n" +
 						            "Yellow Victim : " + numYellowSignal + "\n" +
 						            "Green Victim : " + numGreenSignal + "\n"
 		            );
 		            JSONArray clientList = data_frame.getJSONArray("victim");
-		            for (int i = 0; i < numVictim; i++) {
+		            for (int i = 0; i < clientList.length(); i++) {
 			            JSONObject client = clientList.getJSONObject(i);
 			            adapter.addVictim(client);
 		            }

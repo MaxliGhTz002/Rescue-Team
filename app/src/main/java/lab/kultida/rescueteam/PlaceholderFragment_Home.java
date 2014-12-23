@@ -7,12 +7,15 @@ package lab.kultida.rescueteam;
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -53,6 +56,13 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
         ArrayList<String> total = new ArrayList<>();
         adapter = new WifiListView(activity,wifi,signal,red,yellow,green,total);
         listView_WifiResult.setAdapter(adapter);
+        listView_WifiResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+                textView_Output.append("position : " + position + ", " + adapter.wifi.get(position));
+                activity.connectToWifi(adapter.wifi.get(position));
+            }
+        });
     }
 
     protected void getComponent(){
@@ -75,7 +85,7 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
                 List<ScanResult> temp = wifiManager.getScanResults();
                 ArrayList<String> wifiArrayList = new ArrayList<>();
                 for(int z = 0; z < temp.size(); z++) {
-                    if(temp.get(z).SSID.contains("MY_AP_PI")) wifiArrayList.add(temp.get(z).SSID);
+                    if(temp.get(z).SSID.contains("My_AP_Pi")) wifiArrayList.add(temp.get(z).SSID);
                 }
                 try{
                     data.put("wifiList",new JSONArray(wifiArrayList));
@@ -91,7 +101,13 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
                 Log.d("Placeholder_Home - Click()", "TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString()");
                 textView_Output.append("data_frame : " + data_frame.toString() + "\n");
                 textView_Output.append("Checking Wifi List Information from server\n");
-                new  TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+                    new TCP_Unicast_Send_CheckWifiListInfor().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
+                } else {
+                    new TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString());
+                }
+//                new  TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString());
                 break;
         }
     }
@@ -106,25 +122,15 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
 
         @Override
         protected void onPostExecute(String result) {
-            textView_Output.append(result + "\n");
-            textView_Output.append(data_receive + "\n");
+            textView_Output.append("Data Send  " + result + "\n");
+            textView_Output.append("Data Receive " + data_receive + "\n");
             try {
-//                JSONObject data_frame = new JSONObject(data_receive);
-//                int numVictim = data_frame.getInt("numVictim");
-//                int numRedSignal = data_frame.getInt("numRedSignal");
-//                int numYellowSignal = data_frame.getInt("numYellowSignal");
-//                int numGreenSignal = data_frame.getInt("numGreenSignal");
-//                textView_Summary.append(
-//                        "Total Victim : " + numVictim + "\n" +
-//                                "Red Victim : " + numRedSignal + "\n" +
-//                                "Yellow Victim : " + numYellowSignal + "\n" +
-//                                "Green Victim : " + numGreenSignal  + "\n"
-//                );
-//                JSONArray clientList = data_frame.getJSONArray("victim");
-//                for(int i = 0; i < numVictim;i++){
-//                    JSONObject client = clientList.getJSONObject(i);
-//                    adapter.addVictim(client);
-//                }
+                JSONObject data_frame = new JSONObject(data_receive);
+                JSONArray wifiList = data_frame.getJSONArray("wifiList");
+                for(int i = 0; i < wifiList.length();i++){
+                    JSONObject wifi = wifiList.getJSONObject(i);
+                    adapter.addWifiInfor(wifi);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

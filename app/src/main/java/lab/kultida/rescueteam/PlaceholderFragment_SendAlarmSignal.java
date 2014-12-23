@@ -80,7 +80,7 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
         @Override
         protected void onPostExecute(String result) {
             Log.d("sending broadcast", "finished");
-            textView_Output.append("Send Alarm Signal " + result + "\n");
+            textView_Output.append(activity.time.format(activity.calendar.getTime()) + "  " + activity.date.format(activity.calendar.getTime()) + "  Send Alarm Signal " + result + "\n");
         }
     }
 }

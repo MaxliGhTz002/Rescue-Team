@@ -8,4 +8,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <color name="RED">#FF0000</color>
+    <color name="YELLOW">#FF0</color>
+    <color name="GREEN">#00FF00</color>
+
 </resources>
