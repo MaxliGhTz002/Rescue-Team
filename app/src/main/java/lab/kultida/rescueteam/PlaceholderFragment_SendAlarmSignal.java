@@ -18,6 +18,9 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import lab.kultida.utility.UDP_Broadcast_Send;
 
 public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Prototype {
@@ -26,6 +29,9 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
     protected TextView textView_Output;
     protected int serverPort = 21234;
     protected String alarm = "alarm signal";
+    protected Calendar calendar;
+    protected SimpleDateFormat time;
+    protected SimpleDateFormat date;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -33,6 +39,7 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
         
         defaultOperation();
         getComponent();
+        createTime();
 
         return rootView;
     }
@@ -43,6 +50,12 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
         button_SendAlarmSignal.setOnClickListener(this);
         textView_Output = (TextView)rootView.findViewById(R.id.textView_Output);
         textView_Output.setMovementMethod(new ScrollingMovementMethod());
+    }
+
+    public void createTime(){
+        calendar = Calendar.getInstance();
+        time = new SimpleDateFormat("HH:mm");
+        date = new SimpleDateFormat("dd-MM-yyyy");
     }
 
     @Override
@@ -80,7 +93,7 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
         @Override
         protected void onPostExecute(String result) {
             Log.d("sending broadcast", "finished");
-            textView_Output.append(activity.time.format(activity.calendar.getTime()) + "  " + activity.date.format(activity.calendar.getTime()) + "  Send Alarm Signal " + result + "\n");
+            textView_Output.append(time.format(calendar.getTime()) + "  " + date.format(calendar.getTime()) + "  Send Alarm Signal " + result + "\n");
         }
     }
 }

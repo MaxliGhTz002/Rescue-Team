@@ -107,7 +107,7 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
             textView_Output.append("Data Receive " + data_receive + "\n");
             try {
 	            if(data_receive != null) {
-                    adapter.clear();
+                    createVictimList();
 		            JSONObject data_frame = new JSONObject(data_receive);
 		            int numVictim = data_frame.getInt("numVictim");
 		            int numRedSignal = data_frame.getInt("numRedSignal");
@@ -125,15 +125,15 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
 			            JSONObject client = clientList.getJSONObject(i);
 			            adapter.addVictim(client);
 		            }
+                    adapter.notifyDataSetChanged();
+                    listView_Victim.setSelection(adapter.getCount() - 1);
+                    textView_Output.append("Check Hotspot Information from server Complete\n");
 	            } else {
 		            textView_Summary.append("No result");
 	            }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            adapter.notifyDataSetChanged();
-            listView_Victim.setSelection(adapter.getCount() - 1);
-            textView_Output.append("Check Hotspot Information from server Complete\n");
         }
     }
 }

@@ -35,6 +35,7 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
     protected Button button;
     protected WifiListView adapter;
     protected int serverPort_CheckWifiListInfor = 9998;
+    protected JSONObject signal;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -60,7 +61,31 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
                 textView_Output.append("position : " + position + ", " + adapter.wifi.get(position));
+                WifiManager wifiManager = (WifiManager)activity.getSystemService(Context.WIFI_SERVICE);
                 activity.connectToWifi(adapter.wifi.get(position));
+//                if(wifiManager.isWifiEnabled()) {
+//                    WifiInfo info = wifiManager.getConnectionInfo ();
+//                    if(info.getSSID().contains(adapter.wifi.get(position))){
+//                        Toast.makeText(activity,"still connected : " + info.getSSID(),Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                }
+//                WifiConfiguration conf = new WifiConfiguration();
+//                conf.SSID = "\"" + adapter.wifi.get(position) + "\"";
+//                conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+//                wifiManager.addNetwork(conf);
+//                while(!wifiManager.isWifiEnabled()){
+//                    wifiManager.setWifiEnabled(true);
+//                }
+//                List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+//                for( WifiConfiguration i : list ) {
+//                    if(i.SSID != null && i.SSID.contains("\"" + adapter.wifi.get(position) + "\"")) {
+//                        Toast.makeText(activity, "i.SSID : " + i.SSID + "  ,  " + i.networkId, Toast.LENGTH_SHORT).show();
+//                        wifiManager.disconnect();
+//                        wifiManager.enableNetwork(i.networkId, true);
+//                        wifiManager.reconnect();
+//                    }
+//                }
             }
         });
     }
@@ -84,22 +109,28 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
                 WifiManager wifiManager = (WifiManager)activity.getSystemService(Context.WIFI_SERVICE);
                 List<ScanResult> temp = wifiManager.getScanResults();
                 ArrayList<String> wifiArrayList = new ArrayList<>();
-                for(int z = 0; z < temp.size(); z++) {
-                    if(temp.get(z).SSID.contains("My_AP_Pi")) wifiArrayList.add(temp.get(z).SSID);
-                }
+                signal = new JSONObject();
                 try{
+                for(int z = 0; z < temp.size(); z++) {
+                    String wifiName = temp.get(z).SSID;
+                    if(wifiName.contains("My_AP_Pi")) {
+                        wifiArrayList.add(wifiName);
+                        signal.put(wifiName,temp.get(z).level);
+//                        Toast.makeText(activity,wifiName + " : "+ temp.get(z).level,Toast.LENGTH_SHORT).show();
+                    }
+                }
                     data.put("wifiList",new JSONArray(wifiArrayList));
                     data.put("signal","getWifiListInformation");
 
                     data_frame.put("serverIP", serverIP);
                     data_frame.put("serverPort", serverPort_CheckWifiListInfor);
-                    data_frame.put("data",data);
+                    data_frame.put("data", data);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 Log.d("Placeholder_Home - Click()", "TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString()");
-                textView_Output.append("data_frame : " + data_frame.toString() + "\n");
+                textView_Output.setText("data_frame : " + data_frame.toString() + "\n");
                 textView_Output.append("Checking Wifi List Information from server\n");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 
@@ -125,18 +156,23 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
             textView_Output.append("Data Send  " + result + "\n");
             textView_Output.append("Data Receive " + data_receive + "\n");
             try {
-                JSONObject data_frame = new JSONObject(data_receive);
-                JSONArray wifiList = data_frame.getJSONArray("wifiList");
-                for(int i = 0; i < wifiList.length();i++){
-                    JSONObject wifi = wifiList.getJSONObject(i);
-                    adapter.addWifiInfor(wifi);
+                if(data_receive != null){
+                    createWifiList();
+                    JSONArray wifiList = new JSONArray(data_receive);
+                    for(int i = 0; i < wifiList.length();i++){
+                        JSONObject wifi = wifiList.getJSONObject(i);
+                        wifi.put("signal",signal.get(wifi.getString("wifi")));
+//                        Toast.makeText(activity,wifi.getString("wifi") + " : "+ signal.get(wifi.getString("wifi")),Toast.LENGTH_SHORT).show();
+                        adapter.addWifiInfor(wifi);
+                    }
+                    adapter.notifyDataSetChanged();
+                    listView_WifiResult.setSelection(adapter.getCount() - 1);
+                    textView_Output.append("Check Wifi List Information from server Complete\n");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            adapter.notifyDataSetChanged();
-            listView_WifiResult.setSelection(adapter.getCount() - 1);
-            textView_Output.append("Check Wifi List Information from server Complete\n");
+
         }
     }
 }

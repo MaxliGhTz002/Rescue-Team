@@ -29,9 +29,7 @@ import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -50,9 +48,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected String serverPort_UpdateLocate = "9998";
     protected String PIIP = "192.168.42.1";
     protected String PIPort_JSON = "9090";
-    protected Calendar calendar;
-    protected SimpleDateFormat time;
-    protected SimpleDateFormat date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +55,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_main);
 
-        createTime();
         defaultOperation();
     }
 
@@ -83,7 +77,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected void checkIP(){
         AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
         adb_CheckIp.setTitle("Check IP Address");
-        adb_CheckIp.setMessage("IP Address : " + getIPAddress(true));
+        adb_CheckIp.setMessage("Network : " + ((WifiManager)getSystemService(WIFI_SERVICE)).getConnectionInfo().getSSID() + "\nIP Address : " + getIPAddress(true));
         adb_CheckIp.setPositiveButton("OK", null);
         adb_CheckIp.show();
     }
@@ -110,12 +104,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         Log.d("MainActivity - checkIPAndServerConnection()","TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
         new TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString());
 
-    }
-
-    public void createTime(){
-        calendar = Calendar.getInstance();
-        time = new SimpleDateFormat("HH:mm");
-        date = new SimpleDateFormat("dd-MM-yyyy");
     }
 
     public String getIPAddress(boolean useIPv4) {
@@ -183,6 +171,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     }
 
     protected void connectToWifi(final String networkSSID){
+        Log.d("connect WIFI",networkSSID);
         setSupportProgressBarIndeterminateVisibility(true);
 //        String networkPass = "";
         WifiConfiguration conf = new WifiConfiguration();
@@ -214,6 +203,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 return;
             }
         }
+
         //Add config to Wifi Manager
         wifiManager.addNetwork(conf);
 
@@ -224,8 +214,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for( WifiConfiguration i : list ) {
-
-            if(i.SSID != null && i.SSID.contains("" + networkSSID + "")) {
+            if(i.SSID != null && i.SSID.contains("\"" + networkSSID + "\"")) {
+                Toast.makeText(this, "i.SSID : " + i.SSID + "  ,  " + i.networkId, Toast.LENGTH_SHORT).show();
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
@@ -236,12 +226,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 adb_ConnectWIFI.setTitle("Connect WIFI");
                 adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete" + "\nThis device will connect to Rescue's WIFI in few second");
                 adb_ConnectWIFI.setPositiveButton("Ok", null);
-                adb_ConnectWIFI.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        connectToWifi(networkSSID);
-                    }
-                });
                 adb_ConnectWIFI.show();
                 setSupportProgressBarIndeterminateVisibility(false);
                 return;
@@ -252,6 +236,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         adb_ConnectWIFI.setTitle("Connect WIFI");
         adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " fail");
         adb_ConnectWIFI.setPositiveButton("Ok", null);
+        adb_ConnectWIFI.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                connectToWifi(networkSSID);
+            }
+        });
         adb_ConnectWIFI.show();
         setSupportProgressBarIndeterminateVisibility(false);
     }
