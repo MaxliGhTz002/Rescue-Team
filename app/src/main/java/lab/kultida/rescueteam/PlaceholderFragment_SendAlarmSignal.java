@@ -72,7 +72,7 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+                textView_Output.append(time.format(calendar.getTime()));
                 Log.d("sending broadcast", data_frame.toString());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                     new UDP_Broadcast_Send_AlarmSignal().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
@@ -93,7 +93,7 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
         @Override
         protected void onPostExecute(String result) {
             Log.d("sending broadcast", "finished");
-            textView_Output.append(time.format(calendar.getTime()) + "  " + date.format(calendar.getTime()) + "  Send Alarm Signal " + result + "\n");
+            textView_Output.append("  " + date.format(calendar.getTime()) + "  Send Alarm Signal " + result + "\n");
         }
     }
 }
