@@ -5,6 +5,7 @@
     <string name="title_section1">Home</string>
     <string name="title_section2">Check Hotspot Information</string>
     <string name="title_section3">Send Alarm Signal</string>
+    <string name="title_section4">Packet Simulator</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -12,5 +13,7 @@
     <color name="YELLOW">#FF0</color>
     <color name="GREEN">#00FF00</color>
     <color name="ORANGE">#ffa500</color>
+    <color name="BLACK">#000000</color>
+    <color name="GRAY">#808080</color>
 
 </resources>

@@ -17,6 +17,8 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
     protected String log_Head = "";
     protected String data_receive = null;
     protected boolean receiveData = false;
+    protected int time_sleep = 0;
+    protected String message = null;
 
     @Override
     protected void onPreExecute() {
@@ -38,6 +40,7 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             InetAddress serverIP = InetAddress.getByName(data_frame.getString("serverIP"));
             int serverPort = Integer.parseInt(data_frame.getString("serverPort"));
             String data = data_frame.getJSONObject("data").toString();
+            message = data;
             Log.d(log_Head + " - doInBackground","serverIP : " + data_frame.getString("serverIP"));
             Log.d(log_Head + " - doInBackground","serverPort : " + serverPort);
             Log.d(log_Head + " - doInBackground","send data : " + data);
@@ -65,6 +68,7 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
 
             output.close();
             socket.close();
+            specificFunction();
             return "Success : " + data;
         }catch (Exception e){
             e.printStackTrace();
@@ -76,6 +80,10 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             }
             return "Fail";
         }
+    }
+
+    protected void specificFunction(){
+
     }
 
     @Override

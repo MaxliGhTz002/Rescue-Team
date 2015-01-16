@@ -306,6 +306,19 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.commit();
                 mTitle = getString(R.string.title_section3);
                 break;
+
+            case 3:
+                lastTag = "PacketSimulator";
+                temp = fragmentManager.findFragmentByTag(lastTag);
+                if(temp != null){
+                    transaction.show(temp);
+                }else{
+                    transaction.add(R.id.container, new PlaceholderFragment_PacketSimulator(), lastTag);
+                    transaction.addToBackStack(null);
+                }
+                transaction.commit();
+                mTitle = getString(R.string.title_section4);
+                break;
         }
     }
 
