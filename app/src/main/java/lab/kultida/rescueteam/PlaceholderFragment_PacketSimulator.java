@@ -28,23 +28,23 @@ import lab.kultida.utility.TCP_Unicast_Send;
 import lab.kultida.utility.UDP_Unicast_Send;
 
 public class PlaceholderFragment_PacketSimulator extends PlaceholderFragment_Prototype {
-    EditText editText_IpAddress;
-    EditText editText_Port;
-    RadioGroup radioGroup_Protocol;
-    RadioButton radioButton_UDP;
-    RadioButton radioButton_TCP;
-    EditText editText_Count;
-    Spinner spinner_Count;
-    Button button_Start;
-    Button button_Stop;
-    Switch switch_Running;
-    TextView textView_Summary;
-    TextView textView_Status;
+    protected EditText editText_IpAddress;
+    protected EditText editText_Port;
+    protected RadioGroup radioGroup_Protocol;
+    protected RadioButton radioButton_UDP;
+    protected RadioButton radioButton_TCP;
+    protected EditText editText_Count;
+    protected Spinner spinner_Count;
+    protected Button button_Start;
+    protected Button button_Stop;
+    protected Switch switch_Running;
+    protected TextView textView_Summary;
+    protected TextView textView_Status;
 
-    int count_send = 0;
-    int count_send_complete = 0;
-    int max_send = 0;
-    boolean running = false;
+    protected int count_send = 0;
+    protected int count_send_complete = 0;
+    protected int max_send = 0;
+    protected boolean running = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -56,7 +56,7 @@ public class PlaceholderFragment_PacketSimulator extends PlaceholderFragment_Pro
         return rootView;
     }
 
-    public void getComponent(){
+    protected void getComponent(){
         editText_IpAddress = (EditText)rootView.findViewById(R.id.editText_IpAddress);
         editText_Port = (EditText)rootView.findViewById(R.id.editText_Port);
         radioGroup_Protocol = (RadioGroup)rootView.findViewById(R.id.radioGroup_Protocol);
@@ -154,7 +154,7 @@ public class PlaceholderFragment_PacketSimulator extends PlaceholderFragment_Pro
         }
     }
 
-    public void disableUI(){
+    protected void disableUI(){
         editText_IpAddress.setFocusableInTouchMode(false);
         editText_IpAddress.setFocusable(false);
         editText_IpAddress.setTextColor(getResources().getColor(R.color.GRAY));
@@ -173,7 +173,7 @@ public class PlaceholderFragment_PacketSimulator extends PlaceholderFragment_Pro
         button_Start.setEnabled(false);
     }
 
-    public void enableUI(){
+    protected void enableUI(){
         editText_IpAddress.setFocusableInTouchMode(true);
         editText_IpAddress.setFocusable(true);
         editText_IpAddress.setTextColor(getResources().getColor(R.color.BLACK));
@@ -192,7 +192,7 @@ public class PlaceholderFragment_PacketSimulator extends PlaceholderFragment_Pro
         button_Start.setEnabled(true);
     }
 
-    public void sendPacket(String message){
+    protected void sendPacket(String message){
         //Prepare parameter
         JSONObject data = new JSONObject();
         JSONObject data_frame = new JSONObject();

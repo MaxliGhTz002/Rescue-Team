@@ -32,10 +32,12 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
     protected TextView section_Label;
     protected ListView listView_WifiResult;
     protected TextView textView_Output;
-    protected Button button;
+    protected Button button_RequestWifiResult;
     protected WifiListView adapter;
     protected int serverPort_CheckWifiListInfor = 9998;
     protected JSONObject signal;
+    protected ArrayList<String> wifiArrayList;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -91,8 +93,8 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
 
     protected void getComponent(){
         section_Label = (TextView)rootView.findViewById(R.id.section_Label);
-        button = (Button)rootView.findViewById(R.id.button_ScanWifi);
-        button.setOnClickListener(this);
+        button_RequestWifiResult = (Button)rootView.findViewById(R.id.button_RequestWifiResult);
+        button_RequestWifiResult.setOnClickListener(this);
         textView_Output = (TextView)rootView.findViewById(R.id.textView_Output);
         textView_Output.setMovementMethod(new ScrollingMovementMethod());
         listView_WifiResult = (ListView)rootView.findViewById(R.id.listView_WifiResult);
@@ -101,23 +103,22 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_ScanWifi:
+            case R.id.button_RequestWifiResult:
                 JSONObject data = new JSONObject();
                 JSONObject data_frame = new JSONObject();
 
                 WifiManager wifiManager = (WifiManager)activity.getSystemService(Context.WIFI_SERVICE);
                 List<ScanResult> temp = wifiManager.getScanResults();
-                ArrayList<String> wifiArrayList = new ArrayList<>();
+                wifiArrayList = new ArrayList<>();
                 signal = new JSONObject();
                 try{
-                for(int z = 0; z < temp.size(); z++) {
-                    String wifiName = temp.get(z).SSID;
-                    if(wifiName.contains("My_AP_Pi")) {
-                        wifiArrayList.add(wifiName);
-                        signal.put(wifiName,temp.get(z).level);
-//                        Toast.makeText(activity,wifiName + " : "+ temp.get(z).level,Toast.LENGTH_SHORT).show();
+                    for(int z = 0; z < temp.size(); z++) {
+                        String wifiName = temp.get(z).SSID;
+                        if(wifiName.contains("My_AP_Pi")) {
+                            wifiArrayList.add(wifiName);
+                            signal.put(wifiName,temp.get(z).level);
+                        }
                     }
-                }
                     data.put("wifiList",new JSONArray(wifiArrayList));
                     data.put("signal","getWifiListInformation");
 
@@ -137,7 +138,6 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
                 } else {
                     new TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString());
                 }
-//                new  TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString());
                 break;
         }
     }
@@ -167,6 +167,19 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
                     adapter.notifyDataSetChanged();
                     listView_WifiResult.setSelection(adapter.getCount() - 1);
                     textView_Output.append("Check Wifi List Information from server Complete\n");
+                }else{
+                    for(int i = 0; i < wifiArrayList.size();i++){
+                        JSONObject wifi = new JSONObject();
+                        wifi.put("wifi",wifiArrayList.get(i));
+                        wifi.put("numberRedSignal","");
+                        wifi.put("numberYellowSignal","");
+                        wifi.put("numberGreenSignal","");
+                        wifi.put("numVictim","");
+                        wifi.put("signal",signal.get(wifi.getString("wifi")));
+                        adapter.addWifiInfor(wifi);
+                    }
+                    adapter.notifyDataSetChanged();
+                    listView_WifiResult.setSelection(adapter.getCount() - 1);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

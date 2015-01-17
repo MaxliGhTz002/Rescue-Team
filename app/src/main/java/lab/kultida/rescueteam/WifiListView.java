@@ -68,7 +68,9 @@ public class WifiListView extends ArrayAdapter<String>{
         int signalLevel = signal.get(position) + 100;
         textView_Wifi.setText(wifi.get(position) + "   <" + signalLevel + ">");
         progressBar_Signal.setProgress(signalLevel);
-        if(signalLevel >= 50){
+        if(signalLevel == 50){
+            progressBar_Signal.getProgressDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        }else if(signalLevel >= 50){
             progressBar_Signal.getProgressDrawable().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
         }else if(signalLevel >= 30){
             progressBar_Signal.getProgressDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN);
