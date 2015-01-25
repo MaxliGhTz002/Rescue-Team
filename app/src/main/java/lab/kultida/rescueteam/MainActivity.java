@@ -319,6 +319,19 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.commit();
                 mTitle = getString(R.string.title_section4);
                 break;
+
+            case 4:
+                lastTag = "VictimLocation";
+                temp = fragmentManager.findFragmentByTag(lastTag);
+                if(temp != null){
+                    transaction.show(temp);
+                }else{
+                    transaction.add(R.id.container, new PlaceholderFragment_VictimLocation(), lastTag);
+                    transaction.addToBackStack(null);
+                }
+                transaction.commit();
+                mTitle = getString(R.string.title_section5);
+                break;
         }
     }
 

@@ -15,6 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,7 +37,8 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
     protected TextView textView_Output;
     protected ListView listView_Victim;
     protected int serverPort_CheckHotspotInformation = 9998;
-    String wifiName = "";
+    protected String wifiName = "";
+    private GoogleMap googleMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -40,6 +47,8 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
         defaultOperation();
         getComponent();
         createVictimList();
+        createMapView();
+        addMarker();
         return rootView;
     }
 
@@ -60,6 +69,46 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
         ArrayList<String> annotation = new ArrayList<>();
         adapter = new VictimListView(activity,macAddress,time,signal,annotation);
         listView_Victim.setAdapter(adapter);
+    }
+
+    /**
+     * Initialises the mapview
+     */
+    private void createMapView(){
+        /**
+         * Catch the null pointer exception that
+         * may be thrown when initialising the map
+         */
+        try {
+            if(googleMap == null){
+                SupportMapFragment supportMapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.mapView);
+                googleMap = supportMapFragment.getMap();
+                /**
+                 * If the map is still null after attempted initialisation,
+                 * show an error to the user
+                 */
+                if(googleMap == null) {
+                    Toast.makeText(activity, "Error creating map", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(activity,"create map", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } catch (NullPointerException exception){
+            Log.e("mapApp", exception.toString());
+        }
+    }
+
+    /**
+     * Adds a marker to the map
+     */
+    private void addMarker(){
+        /** Make sure that the map has been initialised **/
+        if(googleMap != null){
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").draggable(true));
+            Toast.makeText(activity,"Add market (0,0)",Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(activity,"googleMap is null",Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
