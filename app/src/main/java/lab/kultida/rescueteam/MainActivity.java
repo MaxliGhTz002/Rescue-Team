@@ -447,6 +447,16 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case R.id.action_getJSONData:
                 getJSONData();
                 break;
+            case R.id.action_clearChat :
+                if(mTitle.toString().matches("Chat Room")) {
+                    Toast.makeText(this,"Clear Chat",Toast.LENGTH_SHORT).show();
+                    database.delelteAllData(database.getTABLE_ChatRoom());
+                    fragment_chatRoom.adapter.clear();
+                    fragment_chatRoom.adapter.notifyDataSetChanged();
+                    fragment_chatRoom.createChat();
+                }
+                else Toast.makeText(this,"Please switch page to chat room before use this operation",Toast.LENGTH_SHORT).show();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
