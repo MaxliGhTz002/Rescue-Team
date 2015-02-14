@@ -31,7 +31,7 @@ public class VictimListView extends ArrayAdapter<String>{
 
     public void addVictim(JSONObject client){
         try {
-            Log.d("VictimListView - addVictim","client = " + client.toString());
+            Log.d("VictimList-addVictim","client = " + client.toString());
             macAddress.add(client.getString("macaddress"));
             time.add(client.getString("time"));
             annotation.add(client.getString("annotation"));

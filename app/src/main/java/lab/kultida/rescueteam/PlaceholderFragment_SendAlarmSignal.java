@@ -18,6 +18,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -87,6 +88,9 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
         @Override
         protected void onPreExecute() {
             log_Head = "UDP_Broadcast_Send_AlarmSignal";
+            try {
+                broadcastIP = InetAddress.getByName("192.168.42.255");
+            } catch (Exception e){}
             super.onPreExecute();
         }
 

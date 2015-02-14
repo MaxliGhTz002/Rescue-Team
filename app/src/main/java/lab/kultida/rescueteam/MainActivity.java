@@ -20,7 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.apache.http.conn.util.InetAddressUtils;
@@ -34,6 +37,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import lab.kultida.utility.DataBase;
 import lab.kultida.utility.JSON_Parser;
 import lab.kultida.utility.TCP_Unicast_Send;
 
@@ -49,13 +53,82 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected String PIIP = "192.168.42.1";
     protected String PIPort_JSON = "9090";
 
+    public DataBase database;
+    protected PlaceholderFragment_ChatRoom fragment_chatRoom;
+    protected PlaceholderFragment_ChatArea fragment_chatArea;
+
+    protected String myUser = "Anonymous";
+    protected String myPhone = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        createFragment();
         setContentView(R.layout.activity_main);
 
         defaultOperation();
+        createDatabase();
+        welcomeUser();
+
+        fragment_chatRoom.activity = this;
+        fragment_chatRoom.database = database;
+        fragment_chatRoom.receiveBroadcast_Chatroom();
+
+        fragment_chatArea.activity = this;
+        fragment_chatArea.database = database;
+        fragment_chatArea.receiveBroadcast_Chatarea();
+    }
+
+    protected void createFragment() {
+        this.fragment_chatRoom = new PlaceholderFragment_ChatRoom();
+        this.fragment_chatArea = new PlaceholderFragment_ChatArea();
+    }
+
+    protected void welcomeUser(){
+        final AutoCompleteTextView input_user = new AutoCompleteTextView(this);
+        input_user.setHint("First Name");
+        ArrayAdapter<String> adapter_user = new ArrayAdapter<>(this,android.R.layout.simple_dropdown_item_1line,database.selectAllDataUser(null));
+        input_user.setThreshold(1);
+        input_user.setAdapter(adapter_user);
+
+        final AutoCompleteTextView input_phone = new AutoCompleteTextView(this);
+        input_phone.setHint("Phone Number");
+        ArrayAdapter<String> adapter_phone = new ArrayAdapter<>(this,android.R.layout.simple_dropdown_item_1line,database.selectAllDataPhone(null));
+        input_phone.setThreshold(1);
+        input_phone.setAdapter(adapter_phone);
+
+        LinearLayout layout = new LinearLayout(this);
+
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(input_user);
+        layout.addView(input_phone);
+
+
+        AlertDialog.Builder adb_getUser = new AlertDialog.Builder(this);
+        adb_getUser.setTitle("Create User");
+        adb_getUser.setMessage("Please Enter Your Name and Phone Number\n");
+        adb_getUser.setView(layout);
+        adb_getUser.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!input_user.getText().toString().matches("")) {
+                    myUser = input_user.getText().toString();
+                }
+
+                if (!input_phone.getText().toString().matches("")) {
+                    myPhone = input_phone.getText().toString();
+                }
+
+                database.insertData(database.getTABLE_User(), database.getTable_User_Column(), new String[]{myUser});
+                database.insertData(database.getTABLE_Phone(), database.getTable_Phone_Column(), new String[]{myPhone});
+
+                Toast.makeText(MainActivity.this, "Welcome " + myUser + " : " + myPhone, Toast.LENGTH_SHORT).show();
+            }
+
+        });
+        adb_getUser.show();
     }
 
     protected void defaultOperation(){
@@ -67,6 +140,13 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+    }
+
+    protected void createDatabase(){
+        database = new DataBase(this); //start class DB
+        database.getWritableDatabase(); // start create database and table
+
 
     }
 
@@ -101,7 +181,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             e.printStackTrace();
         }
 
-        Log.d("MainActivity - checkIPAndServerConnection()","TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
+        Log.d("MainActivity-checkIP+Sr","TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
         new TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString());
 
     }
@@ -146,7 +226,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                     (ip >> 8 & 0xff),
                     (ip >> 16 & 0xff),
                     (ip >> 24 & 0xff));
-            Log.d("MainAcitivity - getIPAddress","IP Address : " + ipString);
+            Log.d("MainAcitivity-getIPAddr","IP Address : " + ipString);
             return ipString;
         } catch (Exception e) {
             e.printStackTrace();
@@ -308,12 +388,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
 
             case 3:
-                lastTag = "PacketSimulator";
+                lastTag = "ChatRoom";
                 temp = fragmentManager.findFragmentByTag(lastTag);
                 if(temp != null){
                     transaction.show(temp);
                 }else{
-                    transaction.add(R.id.container, new PlaceholderFragment_PacketSimulator(), lastTag);
+                    transaction.add(R.id.container, new PlaceholderFragment_ChatRoom(), lastTag);
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();
@@ -321,12 +401,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
 
             case 4:
-                lastTag = "VictimLocation";
+                lastTag = "CharArea";
                 temp = fragmentManager.findFragmentByTag(lastTag);
                 if(temp != null){
                     transaction.show(temp);
                 }else{
-                    transaction.add(R.id.container, new PlaceholderFragment_VictimLocation(), lastTag);
+                    transaction.add(R.id.container, new PlaceholderFragment_ChatArea(), lastTag);
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();

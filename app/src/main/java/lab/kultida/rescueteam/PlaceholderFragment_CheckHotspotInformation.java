@@ -17,6 +17,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -39,6 +41,7 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
     protected int serverPort_CheckHotspotInformation = 9998;
     protected String wifiName = "";
     private GoogleMap googleMap;
+    ArrayList<MarkerOptions> markerOptionses = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -48,7 +51,6 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
         getComponent();
         createVictimList();
         createMapView();
-        addMarker();
         return rootView;
     }
 
@@ -101,14 +103,34 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
     /**
      * Adds a marker to the map
      */
-    private void addMarker(){
+    private void addMarker(double lat,double lng,String marker){
         /** Make sure that the map has been initialised **/
         if(googleMap != null){
-            googleMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").draggable(true));
-            Toast.makeText(activity,"Add market (0,0)",Toast.LENGTH_SHORT).show();
+            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(lat, lng)).title(marker).draggable(true);;
+            markerOptionses.add(markerOptions);
+            googleMap.addMarker(markerOptions);
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title("Marker").draggable(true));
+            Toast.makeText(activity,"Add market (" + lat + "," +  lng + ")",Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(activity,"googleMap is null",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void changeFocusGoogleMap(){
+        double lat_avg = 0;
+        double lng_avg = 0;
+        for(int i = 0;i < markerOptionses.size();i++){
+            lat_avg = lat_avg + markerOptionses.get(i).getPosition().latitude;
+            lng_avg = lng_avg + markerOptionses.get(i).getPosition().latitude;
+        }
+        lat_avg = lat_avg/markerOptionses.size();
+        lng_avg = lng_avg/markerOptionses.size();
+
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(lat_avg, lng_avg));
+        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+
+        googleMap.moveCamera(center);
+        googleMap.animateCamera(zoom);
     }
 
     @Override
@@ -129,7 +151,7 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
                     e.printStackTrace();
                 }
 
-                Log.d("Placeholder_CheckHotspotInformation - Click()", "TCP_Unicast_Send_CheckHotspotInformation()execute(data_frame.toString()");
+                Log.d("Placeholder_ChkHp-Click", "TCP_Unicast_Send_CheckHotspotInformation()execute(data_frame.toString()");
                 textView_Output.append("Checking Hotspot Information from server\n");
 
 	            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -170,10 +192,18 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
 						            "Green Victim : " + numGreenSignal + "\n"
 		            );
 		            JSONArray clientList = data_frame.getJSONArray("victim");
+//                    clear (not testing)
+//                    googleMap.clear();
 		            for (int i = 0; i < clientList.length(); i++) {
 			            JSONObject client = clientList.getJSONObject(i);
+                        double latitude = client.getDouble("lat");
+                        double longitude = client.getDouble("lon");
+                        addMarker(latitude,longitude,client.getString("macaddress"));
                         adapter.addVictim(client);
 		            }
+
+                    changeFocusGoogleMap();
+
                     adapter.notifyDataSetChanged();
                     listView_Victim.setSelection(adapter.getCount() - 1);
                     textView_Output.append("Check Hotspot Information from server Complete\n");

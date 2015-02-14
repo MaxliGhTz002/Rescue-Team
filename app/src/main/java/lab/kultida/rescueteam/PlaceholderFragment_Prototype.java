@@ -7,15 +7,19 @@ package lab.kultida.rescueteam;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import lab.kultida.utility.DataBase;
+
 public class PlaceholderFragment_Prototype extends Fragment implements View.OnClickListener{
     protected MainActivity activity;
     protected boolean debugging_mode = true;
     protected View rootView;
     protected String serverIP = "1.1.1.99";
+    protected DataBase database;
 
     protected void defaultOperation(){
         setRetainInstance(true);
         activity = (MainActivity)getActivity();
+        database = activity.database;
     }
     
     @Override

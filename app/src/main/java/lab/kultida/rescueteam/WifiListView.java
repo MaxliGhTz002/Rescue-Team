@@ -38,7 +38,7 @@ public class WifiListView extends ArrayAdapter<String>{
 
     public void addWifiInfor(JSONObject wifiInfor){
         try {
-            Log.d("WifiListView - addWifiInfor", "wifi = " + wifiInfor.toString());
+            Log.d("WifiListView-addWifi", "wifi = " + wifiInfor.toString());
             wifi.add(wifiInfor.getString("wifi"));
             signal.add(wifiInfor.getInt("signal"));
             red.add(wifiInfor.getString("numRedSignal"));
@@ -62,7 +62,7 @@ public class WifiListView extends ArrayAdapter<String>{
         TextView textView_Total = (TextView) rowView.findViewById(R.id.textView_Total);
 
         Log.d("position",position + "");
-        Log.d("wifi signal red yellow green signal",wifi.size() + " " + signal.size() + " " + red.size() + "" + yellow.size() + " " + green.size() + " " + total.size());
+        //Log.d("wifi signal red yellow green signal",wifi.size() + " " + signal.size() + " " + red.size() + "" + yellow.size() + " " + green.size() + " " + total.size());
         Log.d("signal",signal.toString());
 
         int signalLevel = signal.get(position) + 100;
