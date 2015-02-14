@@ -172,7 +172,7 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
 		            JSONArray clientList = data_frame.getJSONArray("victim");
 		            for (int i = 0; i < clientList.length(); i++) {
 			            JSONObject client = clientList.getJSONObject(i);
-			            adapter.addVictim(client);
+                        adapter.addVictim(client);
 		            }
                     adapter.notifyDataSetChanged();
                     listView_Victim.setSelection(adapter.getCount() - 1);

@@ -1,8 +1,8 @@
 package lab.kultida.rescueteam;
 
 /**
- * Created by ekapop on 14/12/2557.
- */
+* Created by ekapop on 14/12/2557.
+*/
 
 import android.os.Bundle;
 import android.util.Log;
