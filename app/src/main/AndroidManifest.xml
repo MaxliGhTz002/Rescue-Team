@@ -31,7 +31,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDWgnbCz_hlVk4I-7WwFRmlHWfIyge-lgk" />
+            android:value="AIzaSyDWOJOFPY8_yS0lhs1q0nJ0HKepstYpV5s" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

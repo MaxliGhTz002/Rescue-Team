@@ -10,93 +10,83 @@
     android:id="@+id/fragment_home"
     tools:context="lab.kultida.rescueteam.PlaceholderFragment_CheckHotspotInformation">
 
-    <ScrollView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/linearLayout2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/linearLayout">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Check Hotspot Information"
+            android:id="@+id/textView"
+            android:layout_gravity="center"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:id="@+id/textView_Summary"
+            android:layout_below="@+id/button2"
+            android:gravity="center"
+            android:layout_marginTop="20dp" />
+
+        <ListView
+            android:id="@+id/listView_WifiResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:scrollingCache="true"
+            android:stackFromBottom="true"
+            android:smoothScrollbar="true"
+            android:fastScrollAlwaysVisible="false"
+            android:fastScrollEnabled="false"
+            android:headerDividersEnabled="false"
+            android:footerDividersEnabled="false" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView" >
+        android:id="@+id/linearLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true" >
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:weightSum="1">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Check Hotspot Information"
+            android:id="@+id/button_CheckHotspotInformation"
+            android:layout_below="@+id/textView"
+            android:layout_marginTop="10dp" />
 
-            <TextView
-                android:id="@+id/section_Label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Check Hotspot Information"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"
-                android:gravity="center" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Summary"
+            android:id="@+id/textView4"
+            android:layout_above="@+id/listView" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Status"
-                android:id="@+id/textView_Status"
-                android:layout_below="@+id/button_CheckHotspotInformation"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:layout_marginTop="20dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/textView_Output"
+            android:layout_alignParentBottom="true"
+            android:scrollbars="horizontal|vertical"
+            android:layout_below="@+id/listView" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Summary"
-                android:id="@+id/textView_Summary"
-                android:layout_above="@+id/listView_WifiResult"
-                android:layout_alignParentEnd="true" />
-
-            <ListView
-                android:id="@+id/listView_WifiResult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="bottom"
-                android:scrollingCache="true"
-                android:stackFromBottom="true"
-                android:smoothScrollbar="true"
-                android:nestedScrollingEnabled="true"
-                android:fastScrollAlwaysVisible="false"
-                android:fastScrollEnabled="false"
-                android:headerDividersEnabled="false"
-                android:footerDividersEnabled="false"
-                android:minHeight="210dp">
-            </ListView>
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Check Hotspot Information"
-                android:id="@+id/button_CheckHotspotInformation"
-                android:layout_below="@+id/section_Label"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="10dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:id="@+id/textView_Output"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:scrollbars="horizontal|vertical"
-                android:layout_below="@+id/listView_WifiResult"/>
-
-            <fragment
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/mapView"
-                class="com.google.android.gms.maps.SupportMapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="500dp" />
-
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 
 </RelativeLayout>

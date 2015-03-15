@@ -48,14 +48,15 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     private CharSequence mTitle;
     protected String lastTag = "";
     protected int selected = 0;
-    protected String serverIP = "1.1.1.99";
+    protected String serverIP = "10.0.0.99";
     protected String serverPort_UpdateLocate = "9998";
     protected String PIIP = "192.168.42.1";
     protected String PIPort_JSON = "9090";
 
     public DataBase database;
     protected PlaceholderFragment_ChatRoom fragment_chatRoom;
-    protected PlaceholderFragment_ChatArea fragment_chatArea;
+    protected PlaceholderFragment_Map fragment_Map;
+    //protected PlaceholderFragment_ChatArea fragment_chatArea;
 
     protected String myUser = "Anonymous";
     protected String myPhone = "";
@@ -75,14 +76,15 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         fragment_chatRoom.database = database;
         fragment_chatRoom.receiveBroadcast_Chatroom();
 
-        fragment_chatArea.activity = this;
-        fragment_chatArea.database = database;
-        fragment_chatArea.receiveBroadcast_Chatarea();
+//        fragment_chatArea.activity = this;
+//        fragment_chatArea.database = database;
+//        fragment_chatArea.receiveBroadcast_Chatarea();
     }
 
     protected void createFragment() {
         this.fragment_chatRoom = new PlaceholderFragment_ChatRoom();
-        this.fragment_chatArea = new PlaceholderFragment_ChatArea();
+        this.fragment_Map = new PlaceholderFragment_Map();
+        //this.fragment_chatArea = new PlaceholderFragment_ChatArea();
     }
 
     protected void welcomeUser(){
@@ -175,7 +177,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             data.put("fromPi", getNetworkName());
 
             data_frame.put("serverIP", serverIP);
-            data_frame.put("serverPort_CheckHotspotInformation", serverPort_UpdateLocate);
+            data_frame.put("serverPort", serverPort_UpdateLocate);
             data_frame.put("data", data);
         } catch (Exception e) {
             e.printStackTrace();
@@ -349,7 +351,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         Fragment temp;
         switch (position){
             case 0:
-                lastTag = "home";
+                lastTag = getString(R.string.title_section1);
                 temp = fragmentManager.findFragmentByTag(lastTag);
                 if(temp != null){
                     transaction.show(temp);
@@ -362,7 +364,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
 
             case 1:
-                lastTag = "CheckHotspotInformation";
+                lastTag = getString(R.string.title_section2);
                 temp = fragmentManager.findFragmentByTag(lastTag);
                 if(temp != null){
                     transaction.show(temp);
@@ -375,7 +377,21 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
 
             case 2:
-                lastTag = "SendAlarmSignal";
+                lastTag = getString(R.string.title_section3);
+                temp = fragmentManager.findFragmentByTag(lastTag);
+                if(temp != null){
+                    transaction.show(temp);
+                }else{
+                    transaction.add(R.id.container, fragment_Map, lastTag);
+                    transaction.addToBackStack(null);
+                }
+                transaction.commit();
+                mTitle = getString(R.string.title_section3);
+                fragment_Map.remap();
+                break;
+
+            case 3:
+                lastTag = getString(R.string.title_section4);
                 temp = fragmentManager.findFragmentByTag(lastTag);
                 if(temp != null){
                     transaction.show(temp);
@@ -384,34 +400,23 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();
-                mTitle = getString(R.string.title_section3);
-                break;
-
-            case 3:
-                lastTag = "ChatRoom";
-                temp = fragmentManager.findFragmentByTag(lastTag);
-                if(temp != null){
-                    transaction.show(temp);
-                }else{
-                    transaction.add(R.id.container, new PlaceholderFragment_ChatRoom(), lastTag);
-                    transaction.addToBackStack(null);
-                }
-                transaction.commit();
                 mTitle = getString(R.string.title_section4);
                 break;
 
             case 4:
-                lastTag = "CharArea";
+                lastTag = getString(R.string.title_section5);
                 temp = fragmentManager.findFragmentByTag(lastTag);
                 if(temp != null){
                     transaction.show(temp);
                 }else{
-                    transaction.add(R.id.container, new PlaceholderFragment_ChatArea(), lastTag);
+                    transaction.add(R.id.container, fragment_chatRoom, lastTag);
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section5);
                 break;
+
+
         }
     }
 
@@ -446,16 +451,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
             case R.id.action_getJSONData:
                 getJSONData();
-                break;
-            case R.id.action_clearChat :
-                if(mTitle.toString().matches("Chat Room")) {
-                    Toast.makeText(this,"Clear Chat",Toast.LENGTH_SHORT).show();
-                    database.delelteAllData(database.getTABLE_ChatRoom());
-                    fragment_chatRoom.adapter.clear();
-                    fragment_chatRoom.adapter.notifyDataSetChanged();
-                    fragment_chatRoom.createChat();
-                }
-                else Toast.makeText(this,"Please switch page to chat room before use this operation",Toast.LENGTH_SHORT).show();
                 break;
         }
 
