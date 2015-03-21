@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +113,7 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
                 try{
                     for(int z = 0; z < temp.size(); z++) {
                         String wifiName = temp.get(z).SSID;
-                        if(wifiName.contains("My_AP_Pi")) {
+                        if(wifiName.contains("My_AP_Pi") || wifiName.contains("MY_AP_Pi")) {
                             wifiArrayList.add(wifiName);
                             signal.put(wifiName,temp.get(z).level);
                         }
@@ -129,7 +128,6 @@ public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
                     e.printStackTrace();
                 }
 
-                Log.d("Placeholder_Home - Click()", "TCP_Unicast_Send_CheckWifiListInfor().execute(data_frame.toString()");
                 textView_Output.setText("data_frame : " + data_frame.toString() + "\n");
                 textView_Output.append("Checking Wifi List Information from server\n");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

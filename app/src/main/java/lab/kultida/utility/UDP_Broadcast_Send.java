@@ -27,7 +27,7 @@ public class UDP_Broadcast_Send extends AsyncTask<String, Void, String> {
             // Initial condition
             JSONObject data_frame = new JSONObject(arg0[0]);
             Log.d(log_Head + " - doInBackground","data_frame : " + data_frame);
-            int serverPort = data_frame.getInt("serverPort_CheckHotspotInformation");
+            int serverPort = data_frame.getInt("serverPort");
             data_byte = data_frame.getJSONObject("data").toString().getBytes("UTF-8");
             Log.d(log_Head + " - doInBackground","new String(data_byte,\"UTF-8\") : " + new String(data_byte,"UTF-8"));
 //            InetAddress broadcastIP = InetAddress.getByName("192.168.42.255");

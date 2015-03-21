@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -254,26 +255,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     protected void connectToWifi(final String networkSSID){
         Log.d("connect WIFI",networkSSID);
-        setSupportProgressBarIndeterminateVisibility(true);
-//        String networkPass = "";
-        WifiConfiguration conf = new WifiConfiguration();
-        conf.SSID = "\"" + networkSSID + "\"";
-
-        //For WEP authen
-		/*
-		conf.wepKeys[0] = "\"" + networkPass + "\"";
-		conf.wepTxKeyIndex = 0;
-		conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-		conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-		*/
-
-        //For WPA authen
-		/*
-		conf.preSharedKey = "\""+ networkPass +"\"";
-		*/
-
-        //For Open network
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 
         //Check current WIFI
         WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
@@ -286,30 +267,34 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             }
         }
 
-        //Add config to Wifi Manager
-        wifiManager.addNetwork(conf);
-
         //enable Wifi
         while(!wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(true);
         }
 
-        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-        for( WifiConfiguration i : list ) {
-            if(i.SSID != null && i.SSID.contains("\"" + networkSSID + "\"")) {
-                Toast.makeText(this, "i.SSID : " + i.SSID + "  ,  " + i.networkId, Toast.LENGTH_SHORT).show();
-                wifiManager.disconnect();
-                wifiManager.enableNetwork(i.networkId, true);
-                wifiManager.reconnect();
+        List<ScanResult> temp = wifiManager.getScanResults();
+        for(int z = 0; z < temp.size(); z++) {
+            String wifiName = temp.get(z).SSID;
+            if (wifiName.contains("My_AP_Pi") || wifiName.contains("MY_AP_Pi")) {
+                WifiConfiguration wifiConfig = new WifiConfiguration();
+                wifiConfig.SSID = String.format("\"%s\"", wifiName);
+                wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+
+                WifiManager wifiManager3 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+                int netId = wifiManager3.addNetwork(wifiConfig);
+                wifiManager3.disconnect();
+                wifiManager3.enableNetwork(netId, true);
+                wifiManager3.reconnect();
+
                 while(true){
                     if (wifiManager.getConnectionInfo().getSSID().contains(networkSSID)) break;
                 }
+
                 AlertDialog.Builder adb_ConnectWIFI = new AlertDialog.Builder(this);
                 adb_ConnectWIFI.setTitle("Connect WIFI");
                 adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete" + "\nThis device will connect to Rescue's WIFI in few second");
                 adb_ConnectWIFI.setPositiveButton("Ok", null);
                 adb_ConnectWIFI.show();
-                setSupportProgressBarIndeterminateVisibility(false);
                 return;
             }
         }
@@ -349,13 +334,13 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
 
         Fragment temp;
-        switch (position){
+        switch (position) {
             case 0:
                 lastTag = getString(R.string.title_section1);
                 temp = fragmentManager.findFragmentByTag(lastTag);
-                if(temp != null){
+                if (temp != null) {
                     transaction.show(temp);
-                }else{
+                } else {
                     transaction.add(R.id.container, new PlaceholderFragment_Home(), lastTag);
                     transaction.addToBackStack(null);
                 }
@@ -366,9 +351,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case 1:
                 lastTag = getString(R.string.title_section2);
                 temp = fragmentManager.findFragmentByTag(lastTag);
-                if(temp != null){
+                if (temp != null) {
                     transaction.show(temp);
-                }else{
+                } else {
                     transaction.add(R.id.container, new PlaceholderFragment_CheckHotspotInformation(), lastTag);
                     transaction.addToBackStack(null);
                 }
@@ -379,9 +364,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case 2:
                 lastTag = getString(R.string.title_section3);
                 temp = fragmentManager.findFragmentByTag(lastTag);
-                if(temp != null){
+                if (temp != null) {
                     transaction.show(temp);
-                }else{
+                } else {
                     transaction.add(R.id.container, fragment_Map, lastTag);
                     transaction.addToBackStack(null);
                 }
@@ -393,9 +378,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case 3:
                 lastTag = getString(R.string.title_section4);
                 temp = fragmentManager.findFragmentByTag(lastTag);
-                if(temp != null){
+                if (temp != null) {
                     transaction.show(temp);
-                }else{
+                } else {
                     transaction.add(R.id.container, new PlaceholderFragment_SendAlarmSignal(), lastTag);
                     transaction.addToBackStack(null);
                 }
@@ -406,17 +391,15 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case 4:
                 lastTag = getString(R.string.title_section5);
                 temp = fragmentManager.findFragmentByTag(lastTag);
-                if(temp != null){
+                if (temp != null) {
                     transaction.show(temp);
-                }else{
+                } else {
                     transaction.add(R.id.container, fragment_chatRoom, lastTag);
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section5);
                 break;
-
-
         }
     }
 
@@ -447,10 +430,20 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 checkServerConnection();
                 break;
             case R.id.connectWifi :
-                connectToWifi("My_AP_Pi");
+                connectToWifi("MY_AP_Pi");
                 break;
             case R.id.action_getJSONData:
                 getJSONData();
+                break;
+            case R.id.action_clearChat:
+                if(mTitle.toString().matches("Chat Room")) {
+                    Toast.makeText(this,"Clear Chat",Toast.LENGTH_SHORT).show();
+                    database.delelteAllData(database.getTABLE_ChatRoom());
+                    fragment_chatRoom.adapter.clear();
+                    fragment_chatRoom.adapter.notifyDataSetChanged();
+                    fragment_chatRoom.createChat();
+                }
+                else Toast.makeText(this,"Please switch page to chat room before use this operation",Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -558,6 +551,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         protected void onPostExecute(String result) {
             AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
             adb_CheckIp.setTitle("Check Server Connection");
+            if(result.contains("Success")) adb_CheckIp.setMessage("Server Connection : Connected");
+            else adb_CheckIp.setMessage("Server Connection : Fail \nplease check this device connect to My_AP Wifi");
             adb_CheckIp.setMessage("Server Connection : " + result);
             adb_CheckIp.setPositiveButton("OK", null);
             adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {

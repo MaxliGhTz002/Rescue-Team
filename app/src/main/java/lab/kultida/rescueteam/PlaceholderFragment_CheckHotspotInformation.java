@@ -4,6 +4,8 @@ package lab.kultida.rescueteam;
  * Created by ekapop on 14/12/2557.
  */
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,14 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.MarkerOptions;
+import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -34,8 +36,7 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
     protected ListView listView_Victim;
     protected int serverPort_CheckHotspotInformation = 9998;
     protected String wifiName = "";
-    private GoogleMap googleMap;
-    ArrayList<MarkerOptions> markerOptionses = new ArrayList<>();
+    protected ArrayList<String> macAddress_Victim = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -58,12 +59,55 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
     }
 
     public void createVictimList(){
-        ArrayList<String> macAddress = new ArrayList<>();
+        final ArrayList<String> macAddress = new ArrayList<>();
         ArrayList<String> time = new ArrayList<>();
         ArrayList<String> signal = new ArrayList<>();
         ArrayList<String> annotation = new ArrayList<>();
         adapter = new VictimListView(activity,macAddress,time,signal,annotation);
         listView_Victim.setAdapter(adapter);
+        listView_Victim.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder adb_ConfirmRescuedSignal = new AlertDialog.Builder(activity);
+                adb_ConfirmRescuedSignal.setTitle("Confirm this victim is rescued");
+                adb_ConfirmRescuedSignal.setMessage("Confirm this victim is rescued : " + macAddress.get(position));
+                adb_ConfirmRescuedSignal.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectVictim(position);
+                    }
+                });
+                adb_ConfirmRescuedSignal.setPositiveButton("Cancel", null);
+                adb_ConfirmRescuedSignal.show();
+            }
+        });
+    }
+
+    public void selectVictim(int position){
+        //toast.makeText(this, productName.get(position), Toast.LENGTH_SHORT).show();
+        String mac = macAddress_Victim.get(position);
+        sendRescuedSignal(mac);
+    }
+
+    protected void sendRescuedSignal(String mac){
+        JSONObject data = new JSONObject();
+        JSONObject data_frame = new JSONObject();
+
+        try {
+            data.put("annotation", "");
+            data.put("signal", "rescued");
+            data.put("clientIP", "");
+            data.put("macaddress", mac);
+            data.put("fromPi", "");
+
+            data_frame.put("serverIP", serverIP);
+            data_frame.put("serverPort", activity.serverPort_UpdateLocate);
+            data_frame.put("data", data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.d("MainActivity-checkIP+Sr", "TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
+        new TCP_Unicast_Send_Rescued().execute(data_frame.toString());
     }
 
     /**
@@ -166,74 +210,15 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
         }
 
         @Override
-        protected String doInBackground(String... arg0) {
-            return "SUCCESS";
-        }
-
-        @Override
         protected void onPostExecute(String result) {
             textView_Output.append("Data Send  " + result + "\n");
             textView_Output.append("Data Receive " + data_receive + "\n");
+            Toast.makeText(activity,data_receive,Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity,result,Toast.LENGTH_SHORT).show();
             try {
 	            if(data_receive != null) {
-//                if(true) {
                     createVictimList();
 		            JSONObject data_frame = new JSONObject(data_receive);
-//                    JSONObject data_frame = new JSONObject();
-//                    data_frame.put("numVictim","5");
-//                    data_frame.put("numRedSignal","2");
-//                    data_frame.put("numYellowSignal","1");
-//                    data_frame.put("numGreenSignal","2");
-//
-//                    JSONArray victim_array = new JSONArray();
-//
-//                    JSONObject victim1 = new JSONObject();
-//                    victim1.put("macaddress", "A");
-//                    victim1.put("time", "12");
-//                    victim1.put("annotation", "AA");
-//                    victim1.put("signal", "RED");
-//                    victim1.put("lat", "10.12");
-//                    victim1.put("long", "12.1");
-//                    victim_array.put(0,victim1);
-//
-//                    JSONObject victim2 = new JSONObject();
-//                    victim2.put("macaddress", "B");
-//                    victim2.put("time", "11");
-//                    victim2.put("annotation", "BB");
-//                    victim2.put("signal", "RED");
-//                    victim2.put("lat", "9.12");
-//                    victim2.put("long", "8.1");
-//                    victim_array.put(1,victim2);
-//
-//                    JSONObject victim3 = new JSONObject();
-//                    victim3.put("macaddress", "C");
-//                    victim3.put("time", "10");
-//                    victim3.put("annotation", "CC");
-//                    victim3.put("signal", "YELLOW");
-//                    victim3.put("lat", "7.12");
-//                    victim3.put("long", "12.1");
-//                    victim_array.put(2,victim3);
-//
-//                    JSONObject victim4 = new JSONObject();
-//                    victim4.put("macaddress", "D");
-//                    victim4.put("time", "090");
-//                    victim4.put("annotation", "DD");
-//                    victim4.put("signal", "GREEN");
-//                    victim4.put("lat", "-13.12");
-//                    victim4.put("long", "8.1");
-//                    victim_array.put(3,victim4);
-//
-//                    JSONObject victim5 = new JSONObject();
-//                    victim5.put("macaddress", "E");
-//                    victim5.put("time", "70");
-//                    victim5.put("annotation", "EE");
-//                    victim5.put("signal", "GREEN");
-//                    victim5.put("lat", "11.12");
-//                    victim5.put("long", "-7.1");
-//                    victim_array.put(4,victim5);
-//
-//                    data_frame.put("victim",victim_array);
-
 
 		            int numVictim = data_frame.getInt("numVictim");
 		            int numRedSignal = data_frame.getInt("numRedSignal");
@@ -250,10 +235,14 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
                     activity.fragment_Map.clear();
 		            for (int i = 0; i < clientList.length(); i++) {
 			            JSONObject client = clientList.getJSONObject(i);
-                        double latitude = client.getDouble("lat");
-                        double longitude = client.getDouble("long");
+                        String latitude_st = client.getString("lat");
+                        double latitude = Double.parseDouble(latitude_st);
+                        String longitude_st = client.getString("long");
+                        double longitude = Double.parseDouble(longitude_st);
                         activity.fragment_Map.addMarker(latitude, longitude, client.getString("macaddress"));
                         adapter.addVictim(client);
+
+                        macAddress_Victim.add(client.getString("macaddress"));
 		            }
 
                     adapter.notifyDataSetChanged();
@@ -265,6 +254,36 @@ public class PlaceholderFragment_CheckHotspotInformation extends PlaceholderFrag
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    protected class TCP_Unicast_Send_Rescued extends TCP_Unicast_Send {
+
+        @Override
+        protected void onPreExecute() {
+            log_Head = "TCP_Unicast_Send_Rescued";
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            AlertDialog.Builder adb_SendRescuedSignal = new AlertDialog.Builder(activity);
+            adb_SendRescuedSignal.setTitle("Send Rescued Signal to Server");
+            adb_SendRescuedSignal.setMessage("Result : " + result);
+            adb_SendRescuedSignal.setPositiveButton("OK", null);
+            if(result.contains("Fail")){
+                adb_SendRescuedSignal.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            sendRescuedSignal(json_data.getString("macaddress").toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+            adb_SendRescuedSignal.show();
         }
     }
 }

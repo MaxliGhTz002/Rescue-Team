@@ -48,7 +48,6 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         createChat();
         createTime();
         pullDataFromDatabase();
-//        receiveBroadcast_Chatroom();
         chatroom_alreadyopen = true;
 
         return rootView;

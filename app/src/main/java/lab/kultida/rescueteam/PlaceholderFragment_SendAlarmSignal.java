@@ -69,7 +69,7 @@ public class PlaceholderFragment_SendAlarmSignal extends PlaceholderFragment_Pro
                     data.put("alarm",alarm);
 
                     data_frame.put("data", data);
-                    data_frame.put("serverPort_CheckHotspotInformation", serverPort);
+                    data_frame.put("serverPort", serverPort);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -34,7 +34,7 @@ public class PlaceholderFragment_Map extends PlaceholderFragment_Prototype {
         if(googleMap != null){
             googleMap.clear();
             for(int i = 0;i < markerOptionses.size();i++) {
-                Log.d("marker",markerOptionses.get(i).getPosition().toString());
+                Log.d("marker", markerOptionses.get(i).getPosition().toString());
                 googleMap.addMarker(markerOptionses.get(i));
             }
             changeFocusGoogleMap();
@@ -91,20 +91,29 @@ public class PlaceholderFragment_Map extends PlaceholderFragment_Prototype {
     }
 
     public void changeFocusGoogleMap(){
+        if(markerOptionses.size() == 0) return;
         double lat_avg = 0;
         double lng_avg = 0;
         for(int i = 0;i < markerOptionses.size();i++){
             lat_avg = lat_avg + markerOptionses.get(i).getPosition().latitude;
-            lng_avg = lng_avg + markerOptionses.get(i).getPosition().latitude;
+            lng_avg = lng_avg + markerOptionses.get(i).getPosition().longitude;
         }
         lat_avg = lat_avg/markerOptionses.size();
         lng_avg = lng_avg/markerOptionses.size();
 
-        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(lat_avg, lng_avg));
+        Log.d("autoFocus Map","(" + lat_avg +"," + lng_avg + ")");
+
+//        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(lat_avg, lng_avg));
 //        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
 
-        googleMap.moveCamera(center);
+//        googleMap.moveCamera(center);
 //        googleMap.animateCamera(zoom);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(lat_avg, lng_avg))      // Sets the center of the map to Mountain View
+                .zoom(15)                   // Sets the zoom
+                .build();                   // Creates a CameraPosition from the builder
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
     }
 
     @Override

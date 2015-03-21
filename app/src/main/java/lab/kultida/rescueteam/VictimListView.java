@@ -35,7 +35,7 @@ public class VictimListView extends ArrayAdapter<String>{
             macAddress.add(client.getString("macaddress"));
             time.add(client.getString("time"));
             annotation.add(client.getString("annotation"));
-            signal.add(client.getString("signal"));
+            signal.add(client.getString("signals"));
         }catch (Exception e){
             e.printStackTrace();
         }

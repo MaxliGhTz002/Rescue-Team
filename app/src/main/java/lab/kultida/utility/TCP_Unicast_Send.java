@@ -19,6 +19,7 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
     protected boolean receiveData = false;
     protected int time_sleep = 0;
     protected String message = null;
+    protected JSONObject json_data;
 
     @Override
     protected void onPreExecute() {
@@ -39,6 +40,7 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             Log.d(log_Head + " - doInBackground","data_frame : " + data_frame);
             InetAddress serverIP = InetAddress.getByName(data_frame.getString("serverIP"));
             int serverPort = Integer.parseInt(data_frame.getString("serverPort"));
+            json_data = data_frame.getJSONObject("data");
             String data = data_frame.getJSONObject("data").toString();
             message = data;
             Log.d(log_Head + " - doInBackground","serverIP : " + data_frame.getString("serverIP"));
